@@ -29,7 +29,7 @@ o not necessarily starting at 0 foods eaten (e.g. you want to eat a cake, so giv
 
 # Version features/changelog
 
-Current version: 0.1
+Current version: 0.1  
 WIP: 0.2
 
 ## Version 0.1
