@@ -1,10 +1,10 @@
 # budget-macros
 
-Script to pick cheapest combination of foods given a set of macronutrient requirements and a database of foods with nutritional info and pricing info.
+Script for picking the cheapest combination of foods given a set of macronutrient requirements and a database of foods with nutritional and pricing info.
 
 This is sort of a 'multidimensional unbounded knapsack problem' variant, in that items can be repeated indefinitely and there are several requirements to be met - not just one, e.g. weight.
 
-Currently it's brute force, but due to food count being in the 10s, the speed is reasonable. Furthermore, the more restrictive the goals the faster it runs, since lots of options are discarded immediately. Regardless, a Dynamic Programming solution would be better.
+Currently it's brute force, but due to the number of foods being fairly small, the speed is reasonable. Furthermore, the more restrictive the goals the faster it runs, since lots of permutation trees are discarded immediately. Regardless, a Dynamic Programming solution would be better.
 
 # Sample commands
 
