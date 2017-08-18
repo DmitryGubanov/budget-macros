@@ -343,6 +343,6 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Calculates cheapest way to satisfy macro requirements.')
-    parser.add_argument('--foods', nargs=1, help='File containing food info')
-    parser.add_argument('--goals', nargs=1, help='File containing goal info')
+    parser.add_argument('--foods', nargs=1, required=True, help='File containing food info')
+    parser.add_argument('--goals', nargs=1, required=True, help='File containing goal info')
     main()
