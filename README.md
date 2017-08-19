@@ -6,17 +6,56 @@ This is sort of a 'multidimensional unbounded knapsack problem' variant, in that
 
 Currently it's brute force, but due to the number of foods being fairly small, the speed is reasonable. Furthermore, the more restrictive the goals the faster it runs, since lots of permutation trees are discarded immediately. Regardless, a Dynamic Programming solution would be better.
 
-# Sample commands
+# Sample commands and output
 
 Requires python 3.5, argparse
 
-```
-python3.5 budget-calc.py --foods food-db --goals bulking-a
-python3.5 budget-calc.py --foods food-db --goals cutting-b
-```
+Below are outputs using the foods from food-db to satisfy the macro goals in files bulking-a and cutting-b.
 
-This will output the foods used from the food-db to satisfy the macro goals in files bulking-a and cutting-b.
+```
+> python3.5 budget-calc.py --foods food-db --goals bulking-a
+GOALS:
+ -> calories: 2700
+ -> carbs: 285
+ -> fat: 80
+ -> protein: 210
+==========================================
+BRUTE FORCE, ALL MACROS
+Performance: 0.8594 s
+---------
+Cost:     $4.00
+Calories: 2732 cal
+Protein:  214 g
+Carbs:    281 g
+Fat:      79 g
+Using:
+ -> lentils: 4 x 100 g
+ -> oatmeal: 2 x 15 g
+ -> peanut butter: 6 x 15 g
+ -> olive oil: 1 x 15 mL
+ -> myprotein impact whey (w/ deal): 5 x 25 g
 
+> python3.5 budget-calc.py --foods food-db --goals cutting-b
+GOALS:
+ -> calories: 1400
+ -> carbs: 35
+ -> fat: 60
+ -> protein: 180
+==========================================
+BRUTE FORCE, ALL MACROS
+Performance: 0.0191 s
+---------
+Cost:     $3.73
+Calories: 1380 cal
+Protein:  177 g
+Carbs:    32 g
+Fat:      56 g
+Using:
+ -> oatmeal: 1 x 15 g
+ -> peanut butter: 3 x 15 g
+ -> olive oil: 1 x 15 mL
+ -> myprotein impact whey (w/ deal): 9 x 25 g
+```
 
 # Tentative improvements
 
