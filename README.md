@@ -61,6 +61,7 @@ Using:
 
 o implement using Dynamic Programming  
 o catch dumb inputs  
+o food inputs divided into 1 unit items (15mL w/ 150cal -> 1mL w/ 10cal) to eliminate whole '5 x 15mL' type output  
 o optional requirements (e.g. don't care about carbs)  
 o flexible requirements (e.g. protein AT LEAST X g, carbs AT MOST X g)  
 o meals (options are combos of food, rather than indv food items)  
