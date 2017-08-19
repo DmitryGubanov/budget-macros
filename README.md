@@ -21,7 +21,7 @@ This will output the foods used from the food-db to satisfy the macro goals in f
 # Tentative improvements
 
 o implement using Dynamic Programming  
-o catch dumn inputs  
+o catch dumb inputs  
 o optional requirements (e.g. don't care about carbs)  
 o flexible requirements (e.g. protein AT LEAST X g, carbs AT MOST X g)  
 o meals (options are combos of food, rather than indv food items)  
