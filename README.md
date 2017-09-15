@@ -4,7 +4,7 @@ Script for picking the cheapest combination of foods given a set of macronutrien
 
 This is sort of a 'multidimensional unbounded knapsack problem' variant, in that items can be repeated indefinitely and there are several requirements to be met - not just one. This type of problem is NP-hard.
 
-budget-calc.py contains code for a lot of different implementations for the solution, but there are three implementations of note: top-down brute force, top-down dynamic programming, and bottom-up dynamic programming. For a relatively normal diet (1500-2500 calories) and a small set of foods (~7 foods), a top down brute force solution performs best. However, once you increase the requirements or the set of foods, the dynamic programming solutions start to outperform the brute force solution. I go into more detail in the performance section.
+budget-calc.py contains code for a lot of different implementations for the solution, but there are three implementations of note: top-down brute force, top-down dynamic programming, and bottom-up dynamic programming. For a relatively normal diet (<2500 calories) and a small set of foods (<8 foods), a top down brute force solution performs best. However, once you increase the requirements or the set of foods, the dynamic programming solutions start to outperform the brute force solution. I go into more detail in the performance section.
 
 # Sample commands and output
 
@@ -113,7 +113,7 @@ O(Ccfpn), where:
 
 ### Top-down brute force
 
-For a typical diet (<2500 calories and a more-or-less balanced set of macronutrient requirements) with <10 different foods/meals in the database, this is the best option. However, increasing the requirements by a factor of two or even doubling the number of foods in the database makes the runtime for this solution explode.
+For a typical diet (<2500 calories and a more-or-less balanced set of macronutrient requirements) with <8 different foods/meals in the database, this is the best option. However, increasing the requirements by a factor of two or even doubling the number of foods in the database makes the runtime for this solution explode.
 
 ### Top-down dynamic programming
 
