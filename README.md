@@ -123,11 +123,11 @@ As an experiment, I tried two alterations to the database: tripled the foods by 
 
 ### Bottom-up dynamic programming
 
-Although this is the 'best' in terms of scalability, the run time starts at an incredibly high number. With a typical diet and <8 foods in the databse, brute force takes <500,000 steps; whereas this algorithm takes around 100 billion. Granted, adding more foods and increasing the requirements would quickly make this outperform top-down, that simply means top-down is not usable after some point while this is never usable.
+Although this is the 'best' in terms of scalability, the run time starts at an incredibly high number. With a typical diet and <8 foods in the databse, top-down takes <500,000 steps; whereas this algorithm takes around 100 billion. Although adding more foods and increasing the requirements would quickly make this outperform top-down, that simply means top-down is not usable after some point while this is never usable with all requirements.
 
 ### Conclusions and future improvements/testing
 
-All algorithms are slow, but top-down is at least usable at some points. A bottom up approach shines when you ignore at least 2 requirements (say you only care about calories and protein), but fails with any more.
+All algorithms are slow. Top-down is usable in some cases with all requirements. A bottom up approach is usable (and is better) when you ignore at least 2 requirements (say you only care about calories and protein).
 
 I can use this analysis to develop a system which estimates the most reasonable algorithm to use given a set of inputs, at the cost of some time performing calculations on the input. Furthermore, it'll probably be wise to implement a non-deterministic solution or some greedy algorithm which approximates a solution.
 
