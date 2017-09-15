@@ -5,7 +5,6 @@ import time
 
 dp = {}
 
-
 def build_foods(filename):
     """Reads a file, builds the foods with their characteristics, and
     returns them in a list.
@@ -689,6 +688,25 @@ def main():
     print('BRUTE FORCE, ALL MACROS')
     t = time.process_time()
     foods_used = brute_force_all(
+        foods, 0, goals['calories'], goals['protein'], goals['fat'],
+        goals['carbs'])
+    elapsed = time.process_time() - t
+    print('Performance: {0:.4f} s'.format(elapsed))
+    print('---------')
+    print('Cost:     ${0:.2f}'.format(cost(foods, foods_used)))
+    print('Calories: {} cal'.format(int(calories(foods, foods_used))))
+    print('Protein:  {} g'.format(int(protein(foods, foods_used))))
+    print('Carbs:    {} g'.format(int(carbs(foods, foods_used))))
+    print('Fat:      {} g'.format(int(fat(foods, foods_used))))
+    print('Using:')
+    for i, count in foods_used.items():
+        print(' -> {}: {} x {}'.format(foods[i]['name'], count,
+                                       foods[i]['serving_size']))
+
+    print('==========================================')
+    print('DYNAMIC PROGRAMMING (TOP-DOWN), ALL MACROS')
+    t = time.process_time()
+    foods_used = dp_all_td(
         foods, 0, goals['calories'], goals['protein'], goals['fat'],
         goals['carbs'])
     elapsed = time.process_time() - t
