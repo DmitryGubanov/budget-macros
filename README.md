@@ -4,13 +4,13 @@ Script for picking the cheapest combination of foods given a set of macronutrien
 
 This is sort of a 'multidimensional unbounded knapsack problem' variant, in that items can be repeated indefinitely and there are several requirements to be met - not just one.
 
-budget-calc.py contains code for a lot of different types of implementations for the solution, but there are three implementations of note: top-down brute force, top-down dynamic programming, and bottom-up dynamic programming. I was surprised to find that, with reasonable inputs, brute force actually outperforms the dynamic programming solutions. That't not necessarily a bad thing, considering a human diet doesn't consist of many foods (for a computer), so all the combinations that satisfy the requirements isn't really that many combinations. I go in more detail in the next section.
+budget-calc.py contains code for a lot of different implementations for the solution, but there are three implementations of note: top-down brute force, top-down dynamic programming, and bottom-up dynamic programming. I was surprised to find that, with reasonable inputs, brute force actually outperforms the dynamic programming solutions. That's not necessarily a bad thing, considering a human diet doesn't consist of many foods (for a computer), so all the combinations that satisfy the requirements isn't really that many combinations. I go into more detail in the next section.
 
 # Notes on performance
 
 After some testing, I've concluded that a top-down brute force algorithm is actually best for performance for calculating a diet satisfying all requirements. If the numbers were truly random, this might not be the case; but I believe - due to the distribution in the numbers representing food nutrition - brute force does not actually end up calculating overlapping problems, rendering a dynamic programming solution pointless.
 
-I've tried a top-down dynamic programming solution, but as I mentioned, brute force doesn't solve overlapping problems. As a result, the data structures maintained for dynamic programming add run time on top of the brute force run time.
+I've tried a top-down dynamic programming solution, but as I mentioned, brute force doesn't solve overlapping problems in this case. As a result, the data structures maintained for dynamic programming add run time on top of the brute force run time.
 
 I've also tried a bottom-up dynamic programming solution. However, this consistently runs in O(Ccfpn) time. Where C is the calorie goal, c is the carbs goal, f is fat goal, p is protein goal, and n is number of foods in the database. The average diet requirements with 10 different foods puts this number at around 100 billion. Most tests I've ran in brute force only took ~300,000 steps at most.
 
@@ -96,8 +96,4 @@ WIP: 0.2
 
 > Goals: efficiency, correctness
 
-# Random notes
-
-- tried brute force top-down (more requirements -> faster, better for strict diets)
-- tried dynamic programming bottom-up (more requirements -> slower, only feasible with only calories)
-- tried dynamic programming top-down (more-requirements -> faster, same at brute force but with added data struct management time)
+- top-down and bottom-up dynamic programming implementations

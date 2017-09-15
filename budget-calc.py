@@ -197,25 +197,6 @@ def init_four_d_array(dimens, val):
             for i in range(w)]
 
 
-def init_five_d_dict():
-    """Returns an initialized 5D array of a given length
-    where all values are equal to the given value.
-
-    Args:
-        dimens: A tuple containing the dimensions for the array
-        val: A value to put at each index of the array
-
-    Returns:
-        An initialized 5D array
-    """
-    # v, w, x, y, z = dimens
-    # return [[[[[val for l in range(z)]
-    #            for k in range(y)]
-    #           for j in range(x)]
-    #          for i in range(w)]
-    #         for h in range(v)]
-
-
 def brute_force_calories_only(foods, done_count, calories_left):
     """Brute forces a set of cheapest foods based on only the caloric
     requirements.
@@ -329,16 +310,18 @@ def brute_force_all(foods, done_count, cal_left, pro_left, fat_left, carb_left):
     if len(foods) <= done_count:  # done going through all the foods
         return {0: 9999999}
 
-    # calculate for scenario where you ignore the current food and don't use it
+    # calculate scenario where you don't use the current food
     foods_used_a = brute_force_all(
         foods, done_count + 1, cal_left, pro_left, fat_left, carb_left)
-    # if current food violates reqs, then don't bother calc-ing using it
+
+    # if current food violates reqs, then don't bother calculating for it
     if ((cal_left - foods[done_count]['calories']) < -50
             or (pro_left - foods[done_count]['protein']) < -5
             or (fat_left - foods[done_count]['fat']) < -5
             or (carb_left - foods[done_count]['carbs']) < -5):
         return foods_used_a
-    # calculate for scenario where you use the current food
+
+    # calculate scenario where you use the current food
     foods_used_b = brute_force_all(
         foods, done_count, cal_left - foods[done_count]['calories'],
         pro_left - foods[done_count]['protein'],
@@ -352,6 +335,7 @@ def brute_force_all(foods, done_count, cal_left, pro_left, fat_left, carb_left):
     if len(foods_used_b) == 0:
         return foods_used_a
 
+    # calculate cheapest and return
     if cost(foods, foods_used_a) > cost(foods, foods_used_b):
         return foods_used_b
     return foods_used_a
@@ -378,15 +362,17 @@ def dp_all_td(foods, done_count, cal_left, pro_left, fat_left, carb_left):
     if cal_left < 50 and pro_left < 5 and fat_left < 5 and carb_left < 5:
         return {}
 
-    if len(foods) <= done_count:  # done going through all the foods
+    # done going through all the foods
+    if len(foods) <= done_count:
         return {0: 9999999}
 
+    # need everything in ints for data struct
     cal_left = int(cal_left)
     pro_left = int(pro_left)
     fat_left = int(fat_left)
     carb_left = int(carb_left)
 
-    # calculate for scenario where you ignore the current food and don't use it
+    # try to use solution already calculated
     try:
         foods_used_a = \
             dp[(str(done_count + 1) + '-'
@@ -395,15 +381,18 @@ def dp_all_td(foods, done_count, cal_left, pro_left, fat_left, carb_left):
                + str(fat_left) + '-'
                + str(carb_left))]
     except KeyError:
+        # calculate scenario where you don't use current food
         foods_used_a = dp_all_td(
             foods, done_count + 1, cal_left, pro_left, fat_left, carb_left)
+
     # if current food violates reqs, then don't bother calc-ing using it
     if ((cal_left - foods[done_count]['calories']) < -50
             or (pro_left - foods[done_count]['protein']) < -5
             or (fat_left - foods[done_count]['fat']) < -5
             or (carb_left - foods[done_count]['carbs']) < -5):
         return foods_used_a
-    # calculate for scenario where you use the current food
+
+    # try to use solution already calculated
     try:
         foods_used_b = \
             dp[(str(done_count) + '-'
@@ -412,6 +401,7 @@ def dp_all_td(foods, done_count, cal_left, pro_left, fat_left, carb_left):
                 + str(fat_left - foods[done_count]['fat']) + '-'
                 + str(carb_left - foods[done_count]['carbs']))]
     except KeyError:
+        # calculate for scenario where you use the current food
         foods_used_b = dp_all_td(
             foods,
             done_count,
@@ -424,6 +414,7 @@ def dp_all_td(foods, done_count, cal_left, pro_left, fat_left, carb_left):
     except KeyError:
         foods_used_b[done_count] = 1
 
+    # store cheapest, then return it
     if cost(foods, foods_used_a) > cost(foods, foods_used_b):
         dp[(str(done_count) + '-'
             + str(cal_left) + '-'
@@ -466,12 +457,6 @@ def dp_calories_only(foods, cal_goal):
                     prev_cost = macros[i - int(food['calories'])]
                     prev_foods_used = foods_used[i -
                                                  int(food['calories'])].copy()
-                # if i < 500:
-                #     print('i:{}, j:{}'.format(i,j))
-                #     print('foods_used[40] = {}'.format(foods_used[40]))
-                #     print(prev_cost)
-                #     print(prev_foods_used)
-                #     print('---')
                 if macros[i] > prev_cost + food['serving_cost']:
                     macros[i] = prev_cost + food['serving_cost']
                     try:
@@ -479,8 +464,6 @@ def dp_calories_only(foods, cal_goal):
                     except KeyError:
                         prev_foods_used[j] = 1
                     foods_used[i] = prev_foods_used
-    # print('DEBUG: Real cost: ${}'.format(macros[int(cal_goal) - 1]))
-    # print('DEBUG: Food used: ${}'.format(foods_used[int(cal_goal) - 1]))
     return foods_used[cal_goal - 1]
 
 
@@ -506,32 +489,30 @@ def dp_cal_and_pro_only(foods, cal_goal, pro_goal):
         for j in range(pro_goal):
             for n in range(len(foods)):
                 food = foods[n]
-                # if (int(food['calories']) > i and int(food['protein']) > j):
-                #     continue
-                # if (macros[i - int(food['calories'])]
-                #           [j - int(food['protein'])]
-                #         == 999999999):
-                #     prev_cost = 0
-                #     prev_foods_used = {}
-                # else:
-                #     prev_cost = (macros[i - int(food['calories'])]
-                #                        [j - int(food['protein'])])
-                #     prev_foods_used = \
-                #         (foods_used[i - int(food['calories'])]
-                #                    [j - int(food['protein'])]).copy()
-                # new_cal = 0
-                # new_pro = 0
-                # # new_cal = calories(foods, prev_foods_used) + food['calories']
-                # # new_pro = protein(foods, prev_foods_used) + food['protein']
-                # if (macros[i][j] > prev_cost + food['serving_cost']
-                #     and new_cal > i - 50 and new_cal < i + 10
-                #     and new_pro > j - 5 and new_pro < j + 5):
-                #     macros[i][j] = prev_cost + food['serving_cost']
-                #     try:
-                #         prev_foods_used[n] += 1
-                #     except KeyError:
-                #         prev_foods_used[n] = 1
-                #     foods_used[i][j] = prev_foods_used
+                if (int(food['calories']) > i and int(food['protein']) > j):
+                    continue
+                if (macros[i - int(food['calories'])]
+                          [j - int(food['protein'])]
+                        == 999999999):
+                    prev_cost = 0
+                    prev_foods_used = {}
+                else:
+                    prev_cost = (macros[i - int(food['calories'])]
+                                       [j - int(food['protein'])])
+                    prev_foods_used = \
+                        (foods_used[i - int(food['calories'])]
+                                   [j - int(food['protein'])]).copy()
+                new_cal = calories(foods, prev_foods_used) + food['calories']
+                new_pro = protein(foods, prev_foods_used) + food['protein']
+                if (macros[i][j] > prev_cost + food['serving_cost']
+                    and new_cal > i - 50 and new_cal < i + 10
+                    and new_pro > j - 5 and new_pro < j + 5):
+                    macros[i][j] = prev_cost + food['serving_cost']
+                    try:
+                        prev_foods_used[n] += 1
+                    except KeyError:
+                        prev_foods_used[n] = 1
+                    foods_used[i][j] = prev_foods_used
     return foods_used[cal_goal - 1][pro_goal - 1]
 
 
@@ -559,52 +540,48 @@ def dp_all(foods, cal_goal, pro_goal, carb_goal, fat_goal):
                 for l in range(fat_goal):
                     for n in range(len(foods)):
                         food = foods[n]
-                        # if (int(food['calories']) > i
-                        #     or int(food['protein']) > j
-                        #     or int(food['carbs']) > k
-                        #         or int(food['fat']) > l):
-                        #     continue
-                        # if (costs[i - int(food['calories'])]
-                        #          [j - int(food['protein'])]
-                        #          [k - int(food['carbs'])]
-                        #          [l - int(food['fat'])]
-                        #         == 999999999):
-                        #     prev_cost = 0
-                        #     prev_foods_used = {}
-                        # else:
-                        #     prev_cost = (macros[i - int(food['calories'])]
-                        #                        [j - int(food['protein'])]
-                        #                        [j - int(food['carbs'])]
-                        #                        [j - int(food['fat'])])
-                        #     prev_foods_used = \
-                        #         (foods_used[i - int(food['calories'])]
-                        #                    [j - int(food['protein'])]
-                        #                    [k - int(food['carbs'])]
-                        #                    [l - int(food['fat'])]).copy()
-                        # new_cal = 0
-                        # new_pro = 0
-                        # new_car = 0
-                        # new_fat = 0
-                        # # new_cal = calories(
-                        # #     foods, prev_foods_used) + food['calories']
-                        # # new_pro = protein(
-                        # #     foods, prev_foods_used) + food['protein']
-                        # # new_car = carbs(
-                        # #     foods, prev_foods_used) + food['protein']
-                        # # new_fat = fat(
-                        # #     foods, prev_foods_used) + food['protein']
-                        # if (costs[i][j] > prev_cost + food['serving_cost']
-                        #     and new_cal > i - 20 and new_cal < i + 10
-                        #     and new_pro < j + 5 and new_pro < j + 5
-                        #     and new_car < j + 5 and new_car < j + 5
-                        #     and new_fat < j + 5 and new_fat < j + 5):
-                        #     costs[i][j][k][l] = prev_cost + \
-                        #         food['serving_cost']
-                        #     try:
-                        #         prev_foods_used[n] += 1
-                        #     except KeyError:
-                        #         prev_foods_used[n] = 1
-                        #     foods_used[i][j][k][l] = prev_foods_used
+                        if (int(food['calories']) > i
+                            or int(food['protein']) > j
+                            or int(food['carbs']) > k
+                                or int(food['fat']) > l):
+                            continue
+                        if (costs[i - int(food['calories'])]
+                                 [j - int(food['protein'])]
+                                 [k - int(food['carbs'])]
+                                 [l - int(food['fat'])]
+                                == 999999999):
+                            prev_cost = 0
+                            prev_foods_used = {}
+                        else:
+                            prev_cost = (macros[i - int(food['calories'])]
+                                               [j - int(food['protein'])]
+                                               [j - int(food['carbs'])]
+                                               [j - int(food['fat'])])
+                            prev_foods_used = \
+                                (foods_used[i - int(food['calories'])]
+                                           [j - int(food['protein'])]
+                                           [k - int(food['carbs'])]
+                                           [l - int(food['fat'])]).copy()
+                        new_cal = calories(
+                            foods, prev_foods_used) + food['calories']
+                        new_pro = protein(
+                            foods, prev_foods_used) + food['protein']
+                        new_car = carbs(
+                            foods, prev_foods_used) + food['protein']
+                        new_fat = fat(
+                            foods, prev_foods_used) + food['protein']
+                        if (costs[i][j] > prev_cost + food['serving_cost']
+                            and new_cal > i - 20 and new_cal < i + 10
+                            and new_pro < j + 5 and new_pro < j + 5
+                            and new_car < j + 5 and new_car < j + 5
+                            and new_fat < j + 5 and new_fat < j + 5):
+                            costs[i][j][k][l] = prev_cost + \
+                                food['serving_cost']
+                            try:
+                                prev_foods_used[n] += 1
+                            except KeyError:
+                                prev_foods_used[n] = 1
+                            foods_used[i][j][k][l] = prev_foods_used
     return foods_used[cal_goal - 1][pro_goal - 1][carb_goal - 1][fat_goal - 1]
 
 
@@ -614,8 +591,6 @@ def main():
 
     foods = build_foods(args.foods[0])
     goals = build_goals(args.goals[0])
-    # print(foods)
-    # print(goals)
 
     print('GOALS:')
     for macro in sorted(goals.keys()):
@@ -728,26 +703,6 @@ def main():
     for i, count in foods_used.items():
         print(' -> {}: {} x {}'.format(foods[i]['name'], count,
                                        foods[i]['serving_size']))
-
-    # print('==========================================')
-    # print('DYNAMIC PROGRAMMING (TOP-DOWN), ALL MACROS')
-    # t = time.process_time()
-    # dp = {}
-    # foods_used = dp_all_td(
-    #     foods, 0, int(goals['calories']), int(goals['protein']),
-    #     int(goals['fat']), int(goals['carbs']))
-    # elapsed = time.process_time() - t
-    # print('Performance: {0:.4f} s'.format(elapsed))
-    # print('---------')
-    # print('Cost:     ${0:.2f}'.format(cost(foods, foods_used)))
-    # print('Calories: {} cal'.format(int(calories(foods, foods_used))))
-    # print('Protein:  {} g'.format(int(protein(foods, foods_used))))
-    # print('Carbs:    {} g'.format(int(carbs(foods, foods_used))))
-    # print('Fat:      {} g'.format(int(fat(foods, foods_used))))
-    # print('Using:')
-    # for i, count in foods_used.items():
-    #     print(' -> {}: {} x {}'.format(foods[i]['name'], count,
-    #                                    foods[i]['serving_size']))
 
 
 if __name__ == "__main__":
