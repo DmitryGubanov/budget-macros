@@ -2,21 +2,9 @@
 
 Script for picking the cheapest combination of foods given a set of macronutrient requirements and a database of foods with nutritional and pricing info.
 
-This is sort of a 'multidimensional unbounded knapsack problem' variant, in that items can be repeated indefinitely and there are several requirements to be met - not just one.
+This is sort of a 'multidimensional unbounded knapsack problem' variant, in that items can be repeated indefinitely and there are several requirements to be met - not just one. This type of problem is NP-hard.
 
-budget-calc.py contains code for a lot of different implementations for the solution, but there are three implementations of note: top-down brute force, top-down dynamic programming, and bottom-up dynamic programming. I was surprised to find that, with reasonable inputs, brute force actually outperforms the dynamic programming solutions. That's not necessarily a bad thing, considering a human diet doesn't consist of many foods (for a computer), so all the combinations that satisfy the requirements isn't really that many combinations. I go into more detail in the next section.
-
-# Notes on performance
-
-After some testing, I've concluded that a top-down brute force algorithm is actually best for performance for calculating a diet satisfying all requirements. If the numbers were truly random, this might not be the case; but I believe - due to the distribution in the numbers representing food nutrition - brute force does not actually end up calculating overlapping problems, rendering a dynamic programming solution pointless.
-
-I've tried a top-down dynamic programming solution, but as I mentioned, brute force doesn't solve overlapping problems in this case. As a result, the data structures maintained for dynamic programming add run time on top of the brute force run time.
-
-I've also tried a bottom-up dynamic programming solution. However, this consistently runs in O(Ccfpn) time. Where C is the calorie goal, c is the carbs goal, f is fat goal, p is protein goal, and n is number of foods in the database. The average diet requirements with 10 different foods puts this number at around 100 billion. Most tests I've ran in brute force only took ~300,000 steps at most.
-
-Furthermore, with stricter diets (low carb or low fat, for example), a lot of paths of the permutation tree created by brute force recursion end up being cut short due to a lot of foods violating those strict restrictions. This gives an even bigger edge to brute force in these cases.
-
-If the food database was more granular (instead of foods being something like 200 cal/30 carbs/10 protein/4 fat they were more like 2 cal/0.3 carbs/0.1 protein/0.04 fat) the integer solutions would have overlaps and dynamic programming would be more effective relative to brute force. However, rounding errors would be introduced with integer solutions. With floats, the data structure needed to maintain all solutions would be ridiculously complex and would again be the bottleneck.
+budget-calc.py contains code for a lot of different implementations for the solution, but there are three implementations of note: top-down brute force, top-down dynamic programming, and bottom-up dynamic programming. For a relatively normal diet (1500-2500 calories) and a small set of foods (~7 foods), a top down brute force solution performs best. However, once you increase the requirements or the set of foods, the dynamic programming solutions start to outperform the brute force solution. I go into more detail in the performance section.
 
 # Sample commands and output
 
@@ -25,7 +13,7 @@ Requires python 3.5, argparse
 Below are outputs using the foods from food-db to satisfy the macro goals in files bulking-a and cutting-b.
 
 ```
-> python3.5 budget-calc.py --foods food-db --goals bulking-a
+$ python budget-calc.py --foods food-db --goals bulking-a
 GOALS:
  -> calories: 2700
  -> carbs: 285
@@ -33,45 +21,123 @@ GOALS:
  -> protein: 210
 ==========================================
 BRUTE FORCE, ALL MACROS
-Performance: 0.8594 s
+Performance: 8.6511 s
 ---------
-Cost:     $4.00
+Cost:     $3.99
 Calories: 2732 cal
-Protein:  214 g
-Carbs:    281 g
-Fat:      79 g
+Protein:  213 g
+Carbs:    288 g
+Fat:      76 g
+Using:
+ -> oatmeal: 1 x 45 g
+ -> peanut butter: 5 x 15 g
+ -> olive oil: 4 x 5 mL
+ -> myprotein impact whey (w/ deal): 5 x 25 g
+ -> lentils: 4 x 100 g
+==========================================
+DYNAMIC PROGRAMMING (TOP-DOWN), ALL MACROS
+Performance: 7.2987 s
+---------
+Cost:     $3.93
+Calories: 2672 cal
+Protein:  210 g
+Carbs:    285 g
+Fat:      73 g
 Using:
  -> lentils: 4 x 100 g
- -> oatmeal: 2 x 15 g
- -> peanut butter: 6 x 15 g
- -> olive oil: 1 x 15 mL
+ -> oatmeal: 1 x 45 g
+ -> peanut butter: 4 x 15 g
+ -> olive oil: 5 x 5 mL
  -> myprotein impact whey (w/ deal): 5 x 25 g
-
-> python3.5 budget-calc.py --foods food-db --goals cutting-b
-GOALS:
- -> calories: 1400
- -> carbs: 35
- -> fat: 60
- -> protein: 180
-==========================================
-BRUTE FORCE, ALL MACROS
-Performance: 0.0191 s
----------
-Cost:     $3.73
-Calories: 1380 cal
-Protein:  177 g
-Carbs:    32 g
-Fat:      56 g
-Using:
- -> oatmeal: 1 x 15 g
- -> peanut butter: 3 x 15 g
- -> olive oil: 1 x 15 mL
- -> myprotein impact whey (w/ deal): 9 x 25 g
 ```
+```
+ $ python budget-calc.py --foods food-db --goals cutting-b
+ GOALS:
+  -> calories: 1400
+  -> carbs: 35
+  -> fat: 60
+  -> protein: 180
+ ==========================================
+ BRUTE FORCE, ALL MACROS
+ Performance: 0.0360 s
+ ---------
+ Cost:     $4.10
+ Calories: 1410 cal
+ Protein:  184 g
+ Carbs:    36 g
+ Fat:      56 g
+ Using:
+  -> whole milk: 1 x 1 cup
+  -> peanut butter: 3 x 15 g
+  -> olive oil: 1 x 5 mL
+  -> myprotein impact whey (w/ deal): 9 x 25 g
+ ==========================================
+ DYNAMIC PROGRAMMING (TOP-DOWN), ALL MACROS
+ Performance: 0.1142 s
+ ---------
+ Cost:     $4.13
+ Calories: 1370 cal
+ Protein:  178 g
+ Carbs:    30 g
+ Fat:      58 g
+ Using:
+  -> whole milk: 1 x 1 cup
+  -> peanut butter: 1 x 15 g
+  -> olive oil: 5 x 5 mL
+  -> myprotein impact whey (w/ deal): 9 x 25 g
+```
+
+# Performance
+
+This section is to detail what I found with regards to the performance of various algorithms used. I'll be using this section to solidify the ideas I had in my mind, as a guide from which to build further optimizations, and as a reference for the future.
+
+### Estimating run-times
+
+Here are all the estimated run times in one area; they'll be used for reference purposes in the next sections too.
+
+##### Top-down brute force
+O(2<sup>N</sup>), where N is linearly correlated to:
+- the ratio between the goal nutrient sizes and the food nutrient sizes, i.e. cutting food servings in half would impact performance similarly to doubling your goals (e.g. 2000 cal -> 4000 cal)
+- the number of foods in the food database
+
+##### Top-down dynamic programming
+O(2<sup>M</sup>), where M is similar to N.
+
+##### Bottom-up dynamic programming
+O(Ccfpn), where:
+- C is the caloric goal
+- c is the carbs goal
+- f is the fat goal
+- p is the protein goal
+- n is the number of foods in the database
+
+### Top-down brute force
+
+For a typical diet (<2500 calories and a more-or-less balanced set of macronutrient requirements) with <10 different foods/meals in the database, this is the best option. However, increasing the requirements by a factor of two or even doubling the number of foods in the database makes the runtime for this solution explode.
+
+### Top-down dynamic programming
+
+Technically, the runtime is the 'same' as brute force here. There is added run time for maintaining a data structure, but lost run time due to overlaps. The overlaps are hightly dependent on the foods in the database.
+
+As an experiment, I tried two alterations to the database: tripled the foods by literally copy and pasting the database two more times, and doubling the amount of foods by adding a new set of foods. In the former case, the dynamic programming approach was much faster than brute force, since there were a lot of overlaps (the foods combinations would be calculated three times). However, in the latter, the run times both grew together, since there were no or few overlaps.
+
+### Bottom-up dynamic programming
+
+Although this is the 'best' in terms of scalability, the run time starts at an incredibly high number. With a typical diet and <8 foods in the databse, brute force takes <500,000 steps; whereas this algorithm takes around 100 billion. Granted, adding more foods and increasing the requirements would quickly make this outperform top-down, that simply means top-down is not usable after some point while this is never usable.
+
+### Conclusions and future improvements/testing
+
+All algorithms are slow, but top-down is at least usable at some points. A bottom up approach shines when you ignore at least 2 requirements (say you only care about calories and protein), but fails with any more.
+
+I can use this analysis to develop a system which estimates the most reasonable algorithm to use given a set of inputs, at the cost of some time performing calculations on the input. Furthermore, it'll probably be wise to implement a non-deterministic solution or some greedy algorithm which approximates a solution.
+
+I think the way food nutrition numbers are naturally distributed allows for some shortcuts to be taken that would otherwise not work with a completely random set of numbers.
 
 # Tentative improvements
 
 x implement using Dynamic Programming bottom-up  
+x implement using Dynamic Programming top-down  
+o implement a greedy algorithm  
 o write mapping function, given requirements, perform predicted fastest solution method  
 o catch dumb inputs  
 o ~~food inputs divided into 1 unit items (15mL w/ 150cal -> 1mL w/ 10cal) to eliminate whole '5 x 15mL' type output~~ multiply an output like '5 x 15mL' so it says '75ml' in brackets beside it  
@@ -94,6 +160,6 @@ WIP: 0.2
 
 ## Version 0.2
 
-> Goals: efficiency, correctness
+> Goals: efficiency
 
 - top-down and bottom-up dynamic programming implementations
