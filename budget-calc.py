@@ -686,11 +686,11 @@ def main():
 
     print('==========================================')
     print('BRUTE FORCE, ALL MACROS')
-    t = time.process_time()
+    t = time.time()
     foods_used = brute_force_all(
         foods, 0, goals['calories'], goals['protein'], goals['fat'],
         goals['carbs'])
-    elapsed = time.process_time() - t
+    elapsed = time.time() - t
     print('Performance: {0:.4f} s'.format(elapsed))
     print('---------')
     print('Cost:     ${0:.2f}'.format(cost(foods, foods_used)))
@@ -705,11 +705,11 @@ def main():
 
     print('==========================================')
     print('DYNAMIC PROGRAMMING (TOP-DOWN), ALL MACROS')
-    t = time.process_time()
+    t = time.time()
     foods_used = dp_all_td(
         foods, 0, goals['calories'], goals['protein'], goals['fat'],
         goals['carbs'])
-    elapsed = time.process_time() - t
+    elapsed = time.time() - t
     print('Performance: {0:.4f} s'.format(elapsed))
     print('---------')
     print('Cost:     ${0:.2f}'.format(cost(foods, foods_used)))
